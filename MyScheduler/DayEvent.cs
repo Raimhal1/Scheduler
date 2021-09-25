@@ -7,7 +7,6 @@ namespace MyScheduler
     public class DayEvent
     {
 
-        private string eventName;
         private DateTime startEventDate, endEventDate;
         public DateTime StartEventDate {
             get
@@ -31,6 +30,8 @@ namespace MyScheduler
             }
         }
 
+        public string eventName { get; private set; }
+
         public string Description { get; set; }
 
         public DayEvent()
@@ -38,26 +39,41 @@ namespace MyScheduler
             eventName = "some event";
             StartEventDate = DateTime.Now;
             EndEventDate = DateTime.Now.AddDays(1);
-            Description = "";
         }
 
-        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate) : base()
+        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate) : this()
         {
             this.eventName = eventName;
             StartEventDate = startEventDate;
             EndEventDate = endEventDate;
-
+            Description = "";
         }
-        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate, string descriptioin) : this(eventName, startEventDate, endEventDate)
+
+        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate, string description) : this(eventName, startEventDate, endEventDate)
         {
-            Description = descriptioin;
+            Description = description;
         }
 
         public void PrintEvent()
         {
-            Console.WriteLine($"Event name : {eventName}\nStart event : {startEventDate:f}\n" +
-                $"End event : {endEventDate:f}\nEvent duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}\n" +
-                $"Description :\n {Description}");
+            Console.Write("Event name : ");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"{ eventName}");
+            Console.ResetColor();
+            Console.WriteLine($"Start event : {startEventDate:f}\nEnd event : {endEventDate:f}\n" +
+                $"Event duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}");
+            if(Description.Length != 0) { Console.WriteLine($"Description : {Description}"); }
+
+        }
+
+        public string getInfo()
+        {
+            string finalString = 
+                $"Event name : {eventName}\nStart event : {startEventDate:f}\nEnd event : {endEventDate:f}\n" +
+                $"Event duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}\n";
+
+            if (Description != "") { finalString += $"Description : {Description}"; }
+            return finalString;
         }
 
         public TimeSpan getEventDuration(DateTime start, DateTime end)
