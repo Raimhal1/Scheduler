@@ -8,7 +8,8 @@ namespace MyScheduler
     {
 
         private DateTime startEventDate, endEventDate;
-        public DateTime StartEventDate {
+        public DateTime StartEventDate
+        {
             get
             {
                 return startEventDate;
@@ -62,17 +63,18 @@ namespace MyScheduler
             Console.ResetColor();
             Console.WriteLine($"Start event : {startEventDate:f}\nEnd event : {endEventDate:f}\n" +
                 $"Event duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}");
-            if(Description.Length != 0) { Console.WriteLine($"Description : {Description}"); }
+            if (Description.Length != 0) { Console.WriteLine($"Description : {Description}"); }
 
         }
 
         public string getInfo()
         {
-            string finalString = 
+            string finalString =
                 $"Event name : {eventName}\nStart event : {startEventDate:f}\nEnd event : {endEventDate:f}\n" +
-                $"Event duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}\n";
+                $"Event duration : {getEventDuration(startEventDate, endEventDate).ToString(@"dd\.hh\:mm")}";
 
-            if (Description != "") { finalString += $"Description : {Description}"; }
+            if (Description != "") { finalString += $"\nDescription : {Description}"; }
+            finalString += "\n";
             return finalString;
         }
 
@@ -81,5 +83,5 @@ namespace MyScheduler
             return end - start;
         }
 
-    } 
+    }
 }

@@ -19,7 +19,7 @@ namespace MyScheduler
             events.Add(new DayEvent("event2", new DateTime(2001, 5, 1, 8, 30, 0), new DateTime(2010, 2, 10, 2, 30, 0)));
             events.Add(new DayEvent("event3", new DateTime(2007, 6, 2, 1, 30, 0), new DateTime(2008, 5, 12, 8, 30, 0)));
             Menu(events);
-           
+
         }
         private static string CreateDirectory()
         {
@@ -32,7 +32,7 @@ namespace MyScheduler
             return directoryPath;
         }
 
-        static async void WriteEventListToFile( List<DayEvent> list)
+        static async void WriteEventListToFile(List<DayEvent> list)
         {
             var directoryPath = CreateDirectory();
             int count = Directory.GetFiles(directoryPath).Length;
@@ -99,25 +99,40 @@ namespace MyScheduler
                 return;
             }
         }
-
-        static void CreateNewEvent()
+        static void CreateEventName(List<DayEvent> list, out string finalEventName)
         {
-            // set event name
             string eventName = "";
             try
             {
                 Console.Write("Enter event name : ");
                 eventName = Console.ReadLine();
                 if (eventName.Length == 0) { throw new InvalidOperationException(); }
+                if (list.Exists((Event) => Event.eventName == eventName)) { throw new ArgumentException(); }
+                finalEventName = eventName;
             }
             catch (InvalidOperationException)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("The event needs a name! Try again!");
                 Console.ResetColor();
-                CreateNewEvent();
+                CreateEventName(list, out finalEventName);
                 return;
             }
+            catch (ArgumentException)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("The event has just exist! Try again!");
+                Console.ResetColor();
+                CreateEventName(list, out finalEventName);
+                return;
+            }
+        }
+
+        static void CreateNewEvent(List<DayEvent> list)
+        {
+            // set event name
+            string eventName;
+            CreateEventName(list, out eventName);
 
             // set event start time
             DateTime eventDate;
@@ -141,7 +156,7 @@ namespace MyScheduler
                     "The end date of the event must be later than the start date of the event!");
                 Console.WriteLine("Try again to create an event.");
                 Console.ResetColor();
-                CreateNewEvent();
+                CreateNewEvent(list);
                 return;
             }
 
@@ -167,7 +182,7 @@ namespace MyScheduler
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"Event {name} deleted");
             }
-            else{ Console.WriteLine($"Event {name} not exists");}
+            else { Console.WriteLine($"Event {name} not exists"); }
             Console.ResetColor();
         }
 
@@ -179,7 +194,7 @@ namespace MyScheduler
 
         static void PrintEventList(List<DayEvent> list)
         {
-            if(list.Count == 0)
+            if (list.Count == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Event list is empty!");
@@ -231,7 +246,7 @@ namespace MyScheduler
                         end = true;
                         break;
                     case 1:
-                        CreateNewEvent();
+                        CreateNewEvent(events);
                         break;
                     case 2:
                         Console.Write("Enter the name of the event that you want to delete : ");
