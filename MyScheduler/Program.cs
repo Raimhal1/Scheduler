@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MyScheduler
 {
@@ -21,48 +18,87 @@ namespace MyScheduler
             Menu(events);
 
         }
-        private static string CreateDirectory()
-        {
-            var currentPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\"));
-            var directoryPath = currentPath + "Event_lists";
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-            return directoryPath;
-        }
 
-        static async void WriteEventListToFile(List<DayEvent> list)
+        // user interface
+        static void Menu(List<DayEvent> events)
         {
-            var directoryPath = CreateDirectory();
-            int count = Directory.GetFiles(directoryPath).Length;
-            var filePath = directoryPath + $"\\event_list_{count}" + ".txt";
-
-            using (StreamWriter file = new StreamWriter(filePath, false, System.Text.Encoding.Default))
+            
+            while (true)
             {
-                foreach (DayEvent Event in list)
+                bool end = false;
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("Menu : ");
+                Console.ResetColor();
+                Console.WriteLine("Enter 1 - Create new event");
+                Console.WriteLine("Enter 2 - Remove some event");
+                Console.WriteLine("Enter 3 - Sort  event list");
+                Console.WriteLine("Enter 4 - Write event list");
+                Console.WriteLine("Enter 5 - Write event list to file");
+                Console.WriteLine("Enter 6 - Clear event list");
+                Console.WriteLine("Enter 7 - Clear console");
+                Console.WriteLine("Enter 0 - Exit");
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.Write("Choose an action : ");
+                Console.ResetColor();
+
+                int choice;
+                if (!int.TryParse(Console.ReadLine(), out choice) || choice > 8 || choice < 0)
                 {
-                    await file.WriteLineAsync(Event.getInfo());
+                    Console.WriteLine("Not correct input! Try again\n\n--------\n\n");
+                    continue;
+                }
+
+                switch (choice)
+                {
+                    case 0:
+                        end = true;
+                        break;
+                    case 1:
+                        CreateNewEvent(events);
+                        break;
+                    case 2:
+                        Console.Write("Enter the name of the event that you want to delete : ");
+                        RemoveEventFromEventList(events, Console.ReadLine());
+                        break;
+                    case 3:
+                        SortEventListByStarEventtDate(events);
+                        break;
+                    case 4:
+                        WriteEventListToConsole(events);
+                        break;
+                    case 5:
+                        WriteEventListToFile(events);
+                        break;
+                    case 6:
+                        events.Clear();
+                        break;
+                    case 7:
+                        ClearConsole();
+                        break;
+                    default:
+                        break;
+                }
+
+                if (end)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine("Good luck!");
+                    Console.ResetColor();
+                    break;
                 }
             }
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine($"The event list wrote to the {Path.GetFileName(filePath)}");
-            Console.ResetColor();
 
         }
+
+
+        // create date and time
         static void CreateDate(out DateTime date, string state = "start")
         {
             try
             {
                 Console.Write($"Enter event {state} date : ");
                 var str = Console.ReadLine();
-                Regex reg = new Regex(@"^(\d{2}).(\d{2}).(\d{4})$");
-                Match match = reg.Match(str);
-                reg = new Regex(@"[/]");
-                str = reg.Replace(match.Value, ".");
-
-                var check = DateTime.ParseExact(str, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-
+                var check = ParseToDateTime.getDate(str);
                 date = check;
             }
             catch (FormatException)
@@ -74,20 +110,14 @@ namespace MyScheduler
                 return;
             }
         }
-
         static void CreateTime(in DateTime date, out DateTime date_and_time, string state = "start")
         {
             try
             {
                 Console.Write($"Enter event {state} time : ");
                 var str = Console.ReadLine();
-
-                var reg = new Regex(@"^(\d+):(\d{2})$");
-                Match match = reg.Match(str);
-
-                if (!match.Success) { throw new FormatException(); }
-
-                int hours = int.Parse(match.Groups[1].Value), minutes = int.Parse(match.Groups[2].Value);
+                int hours, minutes;
+                ParseToDateTime.getTime( str, out hours, out minutes);
                 date_and_time = new DateTime(date.Year, date.Month, date.Day, hours, minutes, 0);
             }
             catch (FormatException)
@@ -99,6 +129,8 @@ namespace MyScheduler
                 return;
             }
         }
+
+        // create event name
         static void CreateEventName(List<DayEvent> list, out string finalEventName)
         {
             string eventName = "";
@@ -107,7 +139,7 @@ namespace MyScheduler
                 Console.Write("Enter event name : ");
                 eventName = Console.ReadLine();
                 if (eventName.Length == 0) { throw new InvalidOperationException(); }
-                if (list.Exists((Event) => Event.eventName == eventName)) { throw new ArgumentException(); }
+                if (list.Exists((Event) => Event.EventName == eventName)) { throw new ArgumentException(); }
                 finalEventName = eventName;
             }
             catch (InvalidOperationException)
@@ -128,6 +160,7 @@ namespace MyScheduler
             }
         }
 
+        // create new event
         static void CreateNewEvent(List<DayEvent> list)
         {
             // set event name
@@ -172,10 +205,11 @@ namespace MyScheduler
             Console.ResetColor();
         }
 
+        // delete some event
         static void RemoveEventFromEventList(List<DayEvent> list, string name)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            var someEvent = list.Find(Event => Event.eventName == name);
+            var someEvent = list.Find(Event => Event.EventName == name);
             if (someEvent != null)
             {
                 list.Remove(someEvent);
@@ -186,103 +220,45 @@ namespace MyScheduler
             Console.ResetColor();
         }
 
-        static void SortEventListByEventStartDate(List<DayEvent> list)
+        // sort event list
+        static void SortEventListByStarEventtDate(List<DayEvent> list)
         {
             list.Sort((x, y) => x.StartEventDate > y.StartEventDate ? 1 : -1);
-            PrintEventList(list);
-        }
-
-        static void PrintEventList(List<DayEvent> list)
-        {
-            if (list.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Event list is empty!");
-                Console.ResetColor();
-                return;
-            }
-
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("Event list : ");
+            Console.WriteLine("Event list sorted!");
             Console.ResetColor();
-            for (int i = 0; i < list.Count; i++)
-            {
-                Console.WriteLine("--------------------------------------");
-                list[i].PrintEvent();
-            }
-            Console.WriteLine("--------------------------------------");
         }
 
-        static void Menu(List<DayEvent> events)
+
+        // write event list to console
+        static void WriteEventListToConsole(List<DayEvent> events)
         {
-            while (true)
-            {
-                bool end = false;
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("Menu : ");
-                Console.ResetColor();
-                Console.WriteLine("Enter 1 - Create new event");
-                Console.WriteLine("Enter 2 - Remove some event");
-                Console.WriteLine("Enter 3 - Sort and print event list");
-                Console.WriteLine("Enter 4 - Print event list");
-                Console.WriteLine("Enter 5 - Clear event list");
-                Console.WriteLine("Enter 6 - Write event list to file");
-                Console.WriteLine("Enter 7 - Clear console");
-                Console.WriteLine("Enter 0 - Exit");
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.Write("Choose an action : ");
-                Console.ResetColor();
+            IWriteInfo console = new WriteToConsole();
+            console.Write(events);
+        }
 
-                int choice;
-                if (!int.TryParse(Console.ReadLine(), out choice) || choice > 8 || choice < 0)
-                {
-                    Console.WriteLine("Not correct input! Try again\n\n--------\n\n");
-                    continue;
-                }
+        // write event list to file
+        static void WriteEventListToFile(List<DayEvent> Events)
+        {
+            // message
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"The event list wrote to the " +
+                $"{Path.GetFileName(WriteToFile.CreateFilePath())}");
+            Console.ResetColor();
 
-                switch (choice)
-                {
-                    case 0:
-                        end = true;
-                        break;
-                    case 1:
-                        CreateNewEvent(events);
-                        break;
-                    case 2:
-                        Console.Write("Enter the name of the event that you want to delete : ");
-                        RemoveEventFromEventList(events, Console.ReadLine());
-                        break;
-                    case 3:
-                        SortEventListByEventStartDate(events);
-                        break;
-                    case 4:
-                        PrintEventList(events);
-                        break;
-                    case 5:
-                        events.Clear();
-                        break;
-                    case 6:
-                        WriteEventListToFile(events);
-                        break;
-                    case 7:
-                        Console.Clear();
-                        Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        Console.WriteLine("Console cleared");
-                        Console.ResetColor();
-                        break;
-                    default:
-                        break;
-                }
+            // write to file
+            IWriteInfo write = new WriteToFile();
+            write.Write(Events);
+        }
 
-                if (end)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine("Good luck!");
-                    Console.ResetColor();
-                    break;
-                }
-            }
 
+        // clear console 
+        static void ClearConsole()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("Console cleared");
+            Console.ResetColor();
         }
     }
 }
