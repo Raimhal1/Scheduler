@@ -5,6 +5,7 @@ namespace MyScheduler
 {
     public class DayEvent
     {
+        public int id { get; private set; }
 
         private DateTime startEventDate, endEventDate;
         public DateTime StartEventDate
@@ -37,20 +38,22 @@ namespace MyScheduler
 
         public DayEvent()
         {
+            id = 0;
             EventName = "some event";
             StartEventDate = DateTime.Now;
             EndEventDate = DateTime.Now.AddDays(1);
         }
 
-        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate) : this()
+        public DayEvent(int id, string eventName, DateTime startEventDate, DateTime endEventDate) : this()
         {
+            this.id = id;
             this.EventName = eventName;
             StartEventDate = startEventDate;
             EndEventDate = endEventDate;
             Description = "";
         }
 
-        public DayEvent(string eventName, DateTime startEventDate, DateTime endEventDate, string description) : this(eventName, startEventDate, endEventDate)
+        public DayEvent(int id, string eventName, DateTime startEventDate, DateTime endEventDate, string description) : this(id, eventName, startEventDate, endEventDate)
         {
             Description = description;
         }

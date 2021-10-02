@@ -12,9 +12,9 @@ namespace MyScheduler
         static void Main(string[] args)
         {
             events = new List<DayEvent>();
-            events.Add(new DayEvent("event1", new DateTime(2010, 12, 12, 6, 20, 0), new DateTime(2020, 12, 12, 9, 30, 0)));
-            events.Add(new DayEvent("event2", new DateTime(2001, 5, 1, 8, 30, 0), new DateTime(2010, 2, 10, 2, 30, 0)));
-            events.Add(new DayEvent("event3", new DateTime(2007, 6, 2, 1, 30, 0), new DateTime(2008, 5, 12, 8, 30, 0)));
+            events.Add(new DayEvent(1, "event1", new DateTime(2010, 12, 12, 6, 20, 0), new DateTime(2020, 12, 12, 9, 30, 0)));
+            events.Add(new DayEvent(2, "event2", new DateTime(2001, 5, 1, 8, 30, 0), new DateTime(2010, 2, 10, 2, 30, 0)));
+            events.Add(new DayEvent(3, "event3", new DateTime(2007, 6, 2, 1, 30, 0), new DateTime(2008, 5, 12, 8, 30, 0)));
             Menu(events);
 
         }
@@ -178,11 +178,7 @@ namespace MyScheduler
             DateTime eventEndDate;
             CreateTime(in eventDate, out eventEndDate, "end");
 
-            try
-            {
-                if (eventEndDate < eventStartDate) { throw new InvalidOperationException(); }
-            }
-            catch (InvalidOperationException)
+            if (eventEndDate < eventStartDate)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Such an event cannot exist!\n" +
@@ -198,7 +194,7 @@ namespace MyScheduler
             string description = Console.ReadLine();
 
             // create new event
-            DayEvent newEvent = new DayEvent(eventName, eventStartDate, eventEndDate, description);
+            DayEvent newEvent = new DayEvent(1, eventName, eventStartDate, eventEndDate, description);
             events.Add(newEvent);
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("Event created");
