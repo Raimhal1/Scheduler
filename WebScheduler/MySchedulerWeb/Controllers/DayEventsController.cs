@@ -22,7 +22,7 @@ namespace MySchedulerWeb.Controllers
         // GET: DayEvents
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DayEvent.ToListAsync());
+            return View(await _context.DayEvents.ToListAsync());
         }
 
         // GET: DayEvents/Details/5
@@ -33,7 +33,7 @@ namespace MySchedulerWeb.Controllers
                 return NotFound();
             }
 
-            var dayEvent = await _context.DayEvent
+            var dayEvent = await _context.DayEvents
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (dayEvent == null)
             {
@@ -58,7 +58,7 @@ namespace MySchedulerWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(dayEvent);
+                _context.DayEvents.Add(dayEvent);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -73,7 +73,7 @@ namespace MySchedulerWeb.Controllers
                 return NotFound();
             }
 
-            var dayEvent = await _context.DayEvent.FindAsync(id);
+            var dayEvent = await _context.DayEvents.FindAsync(id);
             if (dayEvent == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace MySchedulerWeb.Controllers
                 return NotFound();
             }
 
-            var dayEvent = await _context.DayEvent
+            var dayEvent = await _context.DayEvents
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (dayEvent == null)
             {
@@ -139,15 +139,15 @@ namespace MySchedulerWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dayEvent = await _context.DayEvent.FindAsync(id);
-            _context.DayEvent.Remove(dayEvent);
+            var dayEvent = await _context.DayEvents.FindAsync(id);
+            _context.DayEvents.Remove(dayEvent);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool DayEventExists(int id)
         {
-            return _context.DayEvent.Any(e => e.Id == id);
+            return _context.DayEvents.Any(e => e.Id == id);
         }
     }
 }

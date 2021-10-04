@@ -19,6 +19,21 @@ namespace MySchedulerWeb.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("DayEventUser", b =>
+                {
+                    b.Property<int>("DayEventsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DayEventsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("DayEventUser");
+                });
+
             modelBuilder.Entity("MySchedulerWeb.Models.DayEvent", b =>
                 {
                     b.Property<int>("Id")
@@ -40,7 +55,37 @@ namespace MySchedulerWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DayEvent");
+                    b.ToTable("DayEvents");
+                });
+
+            modelBuilder.Entity("MySchedulerWeb.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DayEventUser", b =>
+                {
+                    b.HasOne("MySchedulerWeb.Models.DayEvent", null)
+                        .WithMany()
+                        .HasForeignKey("DayEventsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MySchedulerWeb.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

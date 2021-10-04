@@ -14,6 +14,8 @@ namespace MySchedulerWeb.Data
         {
         }
 
-        public DbSet<MySchedulerWeb.Models.DayEvent> DayEvent { get; set; }
+        public DbSet<MySchedulerWeb.Models.DayEvent> DayEvents { get; set; }
+        public DbSet<MySchedulerWeb.Models.User> Users { get; set; }
+
     }
 }
