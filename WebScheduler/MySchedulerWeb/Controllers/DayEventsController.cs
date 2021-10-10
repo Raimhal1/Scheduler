@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using MySchedulerWeb.Models;
 
 namespace MySchedulerWeb.Controllers
 {
+    [Authorize]
     public class DayEventsController : Controller
     {
         private readonly MySchedulerWebContext _context;
@@ -19,13 +21,11 @@ namespace MySchedulerWeb.Controllers
             _context = context;
         }
 
-        // GET: DayEvents
         public async Task<IActionResult> Index()
         {
             return View(await _context.DayEvents.ToListAsync());
         }
 
-        // GET: DayEvents/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,15 +43,12 @@ namespace MySchedulerWeb.Controllers
             return View(dayEvent);
         }
 
-        // GET: DayEvents/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: DayEvents/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,EventName,StartEventDate,EndEventDate,Description")] DayEvent dayEvent)
@@ -72,21 +69,18 @@ namespace MySchedulerWeb.Controllers
             {
                 return NotFound();
             }
-
             var dayEvent = await _context.DayEvents.FindAsync(id);
             if (dayEvent == null)
             {
+
                 return NotFound();
             }
             return View(dayEvent);
         }
 
-        // POST: DayEvents/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,StartEventDate,EndEventDate,EventName,Description")] DayEvent dayEvent)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EventName,StartDate,EndEventDate,Description")] DayEvent dayEvent)
         {
             if (id != dayEvent.Id)
             {
@@ -97,7 +91,7 @@ namespace MySchedulerWeb.Controllers
             {
                 try
                 {
-                    _context.Update(dayEvent);
+                    _context.DayEvents.Update(dayEvent);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -116,7 +110,6 @@ namespace MySchedulerWeb.Controllers
             return View(dayEvent);
         }
 
-        // GET: DayEvents/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +127,6 @@ namespace MySchedulerWeb.Controllers
             return View(dayEvent);
         }
 
-        // POST: DayEvents/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -149,5 +141,6 @@ namespace MySchedulerWeb.Controllers
         {
             return _context.DayEvents.Any(e => e.Id == id);
         }
+
     }
 }

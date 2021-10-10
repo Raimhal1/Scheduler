@@ -48,6 +48,7 @@ namespace MySchedulerWeb.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartEventDate")
@@ -58,6 +59,33 @@ namespace MySchedulerWeb.Migrations
                     b.ToTable("DayEvents");
                 });
 
+            modelBuilder.Entity("MySchedulerWeb.Models.Role", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            id = 1,
+                            Name = "admin"
+                        },
+                        new
+                        {
+                            id = 2,
+                            Name = "user"
+                        });
+                });
+
             modelBuilder.Entity("MySchedulerWeb.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -65,12 +93,33 @@ namespace MySchedulerWeb.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RoleId");
+
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@gmail.com",
+                            Password = "admin",
+                            RoleId = 1,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("DayEventUser", b =>
@@ -86,6 +135,20 @@ namespace MySchedulerWeb.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MySchedulerWeb.Models.User", b =>
+                {
+                    b.HasOne("MySchedulerWeb.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("MySchedulerWeb.Models.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Event list</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -24,6 +24,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Users)
+            </th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
@@ -43,9 +47,23 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Users)
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+            <td>
+                @*@if (item.Users.Find(user => user.Email == User.Identity.Name) != null)
+                {
+                    <button asp-action="" value="Sign in" class="btn btn-primary"></button>
+                }
+                else
+                {
+                    <button asp-action="" value="Sign out" class="btn btn-primary"></button>
+                }*@
+
             </td>
         </tr>
 }
