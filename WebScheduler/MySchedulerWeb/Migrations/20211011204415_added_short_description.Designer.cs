@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySchedulerWeb.Data;
 
 namespace MySchedulerWeb.Migrations
 {
     [DbContext(typeof(MySchedulerWebContext))]
-    partial class MySchedulerWebContextModelSnapshot : ModelSnapshot
+    [Migration("20211011204415_added_short_description")]
+    partial class added_short_description
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

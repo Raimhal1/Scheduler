@@ -1,0 +1,54 @@
+﻿@model IEnumerable<MySchedulerWeb.Models.User>
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1>All Users</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DayEvents)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.RoleId)
+            </td>
+            <td>
+                @foreach (var Event in user.DayEvents)
+                {
+                    <span>@Event.EventName</span>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+

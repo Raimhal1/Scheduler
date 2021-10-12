@@ -24,8 +24,15 @@ namespace MySchedulerWeb.Models
         [Display(Name = "End date")]
         public DateTime EndEventDate { get; set; }
 
+        [Display(Name = "Short description")]
+        [StringLength(30)]
+        public string ShortDescription { get; set; }
+
+        [Display(Name = "Long description")]
         public string Description { get; set; }
 
-        public virtual List<User> Users { get; set; }
+        public string Creator { get; set; }
+
+        public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
     }
 }

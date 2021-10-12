@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySchedulerWeb.Data;
 
 namespace MySchedulerWeb.Migrations
 {
     [DbContext(typeof(MySchedulerWebContext))]
-    partial class MySchedulerWebContextModelSnapshot : ModelSnapshot
+    [Migration("20211012122711_refactored_creating_from_lists_to_Hashsets")]
+    partial class refactored_creating_from_lists_to_Hashsets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

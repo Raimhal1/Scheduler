@@ -22,7 +22,10 @@
                 @Html.DisplayNameFor(model => model.EndEventDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.ShortDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Creator)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Users)
@@ -44,27 +47,37 @@
                 @Html.DisplayFor(modelItem => item.EndEventDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.ShortDescription)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Users)
+                @Html.DisplayFor(modelItem => item.Creator)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.Users.Count)
             </td>
-            <td>
-                @*@if (item.Users.Find(user => user.Email == User.Identity.Name) != null)
+            @if (item.Creator != User.Identity.Name)
+            {
+                if (item.Users.FirstOrDefault(u => u.Email == User.Identity.Name) == null)
                 {
-                    <button asp-action="" value="Sign in" class="btn btn-primary"></button>
+                    <td>
+                        <a asp-action="SignIn" asp-route-id="@item.Id">Sign in</a>
+                    </td>
                 }
                 else
                 {
-                    <button asp-action="" value="Sign out" class="btn btn-primary"></button>
-                }*@
-
-            </td>
+                    <td>
+                        <a asp-action="SignIn" asp-route-id="@item.Id">Sign out</a>
+                    </td>
+                }
+            }
+            else
+            {
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            }
         </tr>
 }
     </tbody>
