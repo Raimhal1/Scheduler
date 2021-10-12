@@ -41,10 +41,12 @@
                 @Html.DisplayFor(modelItem => user.RoleId)
             </td>
             <td>
+                <ul>
                 @foreach (var Event in user.DayEvents)
                 {
-                    <span>@Event.EventName</span>
+                    <li>@Event.EventName</li>
                 }
+                </ul>
             </td>
         </tr>
         }

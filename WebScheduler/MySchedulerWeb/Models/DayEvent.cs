@@ -17,11 +17,13 @@ namespace MySchedulerWeb.Models
         [Required(ErrorMessage = "Start Date not specified")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Start date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy hh:mm}")]
         public DateTime StartEventDate { get; set; }
 
         [Required(ErrorMessage = "End Date not specified")]
         [DataType(DataType.DateTime)]
         [Display(Name = "End date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy hh:mm}")]
         public DateTime EndEventDate { get; set; }
 
         [Display(Name = "Short description")]

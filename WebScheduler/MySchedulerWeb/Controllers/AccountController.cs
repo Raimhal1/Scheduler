@@ -36,7 +36,8 @@ namespace MySchedulerWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
+                User user = await _context.Users.Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
                 if (user != null)
                 {
                     await Authenticate(user);

@@ -24,7 +24,9 @@ namespace MySchedulerWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DayEvents.Include(e => e.Users).ThenInclude(u => u.DayEvents).ToListAsync());
+            return View(await _context.DayEvents.Include(e => e.Users)
+                .ThenInclude(u => u.DayEvents)
+                .ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -35,7 +37,9 @@ namespace MySchedulerWeb.Controllers
             }
 
             var dayEvent = await _context.DayEvents.Include(e => e.Users)
-                .ThenInclude(u => u.DayEvents).FirstOrDefaultAsync(ev => ev.Id == id);
+                .ThenInclude(u => u.DayEvents)
+                .FirstOrDefaultAsync(ev => ev.Id == id);
+
             if (dayEvent == null)
             {
                 return NotFound();
@@ -81,7 +85,9 @@ namespace MySchedulerWeb.Controllers
                 return NotFound();
             }
             var dayEvent = await _context.DayEvents.Include(e => e.Users)
-                .ThenInclude(u => u.DayEvents).FirstOrDefaultAsync(d => d.Id == id);
+                .ThenInclude(u => u.DayEvents)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
             if (dayEvent == null)
             {
 
@@ -108,6 +114,7 @@ namespace MySchedulerWeb.Controllers
                     {
                         dayEvent.Creator = user.Email;
                         _context.DayEvents.Update(dayEvent);
+
                         await _context.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException)
@@ -135,7 +142,9 @@ namespace MySchedulerWeb.Controllers
             }
 
             var dayEvent = await _context.DayEvents.Include(e => e.Users)
-                .ThenInclude(u => u.DayEvents).FirstOrDefaultAsync(d => d.Id == id);
+                .ThenInclude(u => u.DayEvents)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
             if (dayEvent == null)
             {
                 return NotFound();
@@ -149,7 +158,9 @@ namespace MySchedulerWeb.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var dayEvent = await _context.DayEvents.FindAsync(id);
-            var users = await _context.Users.Include(u => u.DayEvents).Where(e => e.Id == dayEvent.Id).ToListAsync();
+            var users = await _context.Users.Include(u => u.DayEvents)
+                .Where(e => e.Id == dayEvent.Id)
+                .ToListAsync();
 
             foreach(var user in users)
             {
@@ -171,7 +182,7 @@ namespace MySchedulerWeb.Controllers
             return _context.DayEvents.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> SignIn(int? id)
+        public async Task<IActionResult> SignInOut(int? id)
         {
             if (id == null)
             {
@@ -179,7 +190,8 @@ namespace MySchedulerWeb.Controllers
             }
 
             var dayEvent = await _context.DayEvents.Include(e => e.Users)
-                .ThenInclude(u => u.DayEvents).FirstOrDefaultAsync(e => e.Id == id);
+                .ThenInclude(u => u.DayEvents)
+                .FirstOrDefaultAsync(e => e.Id == id);
             if (dayEvent == null)
             {
                 return NotFound();
@@ -188,33 +200,36 @@ namespace MySchedulerWeb.Controllers
             return View(dayEvent);
         }
 
-        [HttpPost, ActionName("SignIn")]
+        [HttpPost, ActionName("SignInOut")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignInConfirmed(int? id)
         {
-            var dayEvent = await _context.DayEvents.FindAsync(id);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
-            if (user != null)
+            var dayEvent = await _context.DayEvents.Include(e => e.Users)
+                .ThenInclude(u => u.DayEvents)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            var user = await _context.Users.Include(u => u.DayEvents)
+                .ThenInclude(e => e.Users)
+                .FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
+
+            if (!dayEvent.Users.Contains(user))
             {
-                if (!dayEvent.Users.Contains(user))
-                {
-                    user.DayEvents.Add(dayEvent);
-                    dayEvent.Users.Add(user);
-
-                }
-                else
-                {
-                    user.DayEvents.Remove(dayEvent);
-                    dayEvent.Users.Remove(user);
-
-                }
-                _context.DayEvents.Update(dayEvent);
-                _context.Users.Update(user);
-
-                await _context.SaveChangesAsync();
-
+                user.DayEvents.Add(dayEvent);
+                dayEvent.Users.Add(user);
             }
+            else
+            {
+                user.DayEvents.Remove(dayEvent);
+                dayEvent.Users.Remove(user);
+            }
+
+            _context.DayEvents.Update(dayEvent);
+            _context.Users.Update(user);
+
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));    
         }
+
     }
 }

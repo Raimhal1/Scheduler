@@ -1,11 +1,18 @@
 ﻿@model MySchedulerWeb.Models.DayEvent
 
 @{
-    ViewData["Title"] = "Sign in";
+    ViewData["Title"] = "Confirmation";
+
 }
-<h3>Are you sure you want to sing in to this event?</h3>
+@if (Model.Users.FirstOrDefault(u => u.Email == User.Identity.Name) == null)
+{
+    <h3>Are you sure you want to sing in to this event?</h3>
+}
+else
+{
+    <h3>Are you sure you want to quit this event?</h3>
+}
 <div>
-    <h4>DayEvent</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -45,10 +52,9 @@
             @Html.DisplayFor(model => model.Creator)
         </dd>
     </dl>
-
-    <form asp-action="SignIn">
+    <form asp-action="SignInOut">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Sign in" /> |
+        <input type="submit" value="I sure" class="btn btn-primary" /> |
         <a asp-action="Index">Back to List</a>
     </form>
 </div>

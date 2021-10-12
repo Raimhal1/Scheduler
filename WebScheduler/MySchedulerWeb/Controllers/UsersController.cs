@@ -29,7 +29,9 @@ namespace MySchedulerWeb.Controllers
         public async Task<IActionResult> List()
         {
 
-            return View(await _context.Users.Include(u => u.DayEvents).ThenInclude(e => e.Users).ToListAsync());
+            return View(await _context.Users.Include(u => u.DayEvents)
+                .ThenInclude(e => e.Users)
+                .ToListAsync());
         }
 
 
